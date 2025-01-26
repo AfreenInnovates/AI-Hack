@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoScan - About Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .navbar {
+            background-color:#2f8e7d;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            background-color: #2f8e7d;
+            color: white;
+            padding: 3rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .quiz-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .question-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .button {
+            background-color: #2f8e7d;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #2f8e7d;
+        }
+
+        .result-card {
+            border: 1px solid#2f8e7d;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .footer {
+            background-color:#2f8e7d;
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .hero {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-brand">🌱 EcoScan</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about">About Us</a>
+                <a href="/upload">Upload Image</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Our Mission</h1>
+            <p>Empowering individuals to make informed recycling decisions through cutting-edge AI technology and environmental education.</p>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Who We Are</h2>
+                <p>EcoScan is a team of passionate environmentalists, technologists, and innovators working together to solve recycling challenges through artificial intelligence.</p>
+            </div>
+            <div class="card">
+                <h2>Our Technology</h2>
+                <p>Powered by Google's Gemini AI, our platform provides accurate, real-time guidance on recycling various materials through advanced image recognition.</p>
+            </div>
+            <div class="card">
+                <h2>Our Impact</h2>
+                <p>By making recycling information accessible and interactive, we're helping reduce waste and promote sustainable practices in communities worldwide.</p>
+            </div>
+            <div class="card">
+                <h2>Join Us</h2>
+                <p>Start your journey towards sustainable living today. Every scan makes a difference in creating a cleaner, greener future for generations to come.</p>
+            </div>
+        </div>
+
+        <div class="quiz-section" id="quiz-section">
+            <h2>Find Your Perfect Tree-Planting Initiative</h2>
+            <div id="quiz-start" class="text-center">
+                <p>Take our quick quiz to find the tree-planting initiative that best matches your interests!</p>
+                <button class="button" onclick="startQuiz()">Start Quiz</button>
+            </div>
+            <div id="quiz-questions" style="display: none;">
+                <!-- Questions will be inserted here by JavaScript -->
+            </div>
+            <div id="quiz-results" style="display: none;">
+                <!-- Results will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2024 EcoScan. Making recycling smarter, one scan at a time.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            {
+                question: "What interests you most about environmental conservation?",
+                options: [
+                    "Community engagement and education",
+                    "Direct environmental impact",
+                    "Supporting local farmers and agriculture",
+                    "Global climate change initiatives"
+                ]
+            },
+            {
+                question: "How would you prefer to contribute to environmental causes?",
+                options: [
+                    "Regular small donations",
+                    "One-time larger donations",
+                    "Volunteering and hands-on work",
+                    "Spreading awareness and education"
+                ]
+            },
+            {
+                question: "Which area would you like your contribution to impact most?",
+                options: [
+                    "Urban greening projects",
+                    "Rural farming communities",
+                    "Forest restoration",
+                    "Community education programs"
+                ]
+            }
+        ];
+
+        const organizations = [
+            {
+                name: "ISCI Foundation",
+                url: "https://www.iscifoundation.org/donate-trees",
+                description: "Perfect for those interested in community development and sustainable farming.",
+                focus: ["Community engagement", "Sustainable farming", "Regular donations"]
+            },
+            {
+                name: "One Tree for Everyone",
+                url: "https://www.onetreeforeveryone.org/",
+                description: "Ideal for those focused on nationwide awareness and mass plantation drives.",
+                focus: ["Awareness", "Mass plantation", "Education"]
+            },
+            {
+                name: "Nelda",
+                url: "https://nelda.org.in/donate-tree/",
+                description: "Great for those who want to contribute through volunteering and hands-on work.",
+                focus: ["Volunteering", "Urban greening", "Direct impact"]
+            },
+            {
+                name: "Hydragreens Foundation",
+                url: "https://www.hydragreens.org/take-action",
+                description: "Best for those interested in comprehensive environmental restoration and climate action.",
+                focus: ["Climate action", "Water conservation", "Biodiversity"]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+
+        function startQuiz() {
+            document.getElementById('quiz-start').style.display = 'none';
+            document.getElementById('quiz-questions').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const questionHTML = `
+                <div class="question-container">
+                    <h3>${questions[currentQuestion].question}</h3>
+                    <div class="radio-group">
+                        ${questions[currentQuestion].options.map((option, index) => `
+                            <label class="radio-option">
+                                <input type="radio" name="question${currentQuestion}" value="${option}">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <button class="button" onclick="handleAnswer()">Next</button>
+                </div>
+            `;
+            document.getElementById('quiz-questions').innerHTML = questionHTML;
+        }
+
+        function handleAnswer() {
+            const selectedOption = document.querySelector(`input[name="question${currentQuestion}"]:checked`);
+            if (!selectedOption) {
+                alert('Please select an answer before continuing.');
+                return;
+            }
+
+            answers.push(selectedOption.value);
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-questions').style.display = 'none';
+            const resultsDiv = document.getElementById('quiz-results');
+            resultsDiv.style.display = 'block';
+
+            // Simple matching algorithm - you can make this more sophisticated
+            const recommendedOrg = organizations[Math.floor(Math.random() * organizations.length)];
+
+            const resultsHTML = `
+                <div class="result-card">
+                    <h3>Based on your responses, we recommend:</h3>
+                    <h4>${recommendedOrg.name}</h4>
+                    <p>${recommendedOrg.description}</p>
+                    <button class="button" onclick="window.open('${recommendedOrg.url}', '_blank')">
+                        Visit Website
+                    </button>
+                </div>
+                <h3>Other Great Organizations</h3>
+                ${organizations
+                    .filter(org => org.name !== recommendedOrg.name)
+                    .map(org => `
+                        <div class="result-card">
+                            <h4>${org.name}</h4>
+                            <p>${org.description}</p>
+                            <button class="button" onclick="window.open('${org.url}', '_blank')">
+                                Learn More
+                            </button>
+                        </div>
+                    `).join('')}
+                <button class="button" onclick="resetQuiz()" style="margin-top: 1rem;">Take Quiz Again</button>
+            `;
+            
+            resultsDiv.innerHTML = resultsHTML;
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            answers = [];
+            document.getElementById('quiz-results').style.display = 'none';
+            document.getElementById('quiz-start').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
