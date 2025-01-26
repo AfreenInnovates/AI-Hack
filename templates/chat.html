@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Recycling Assistant</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo">♻️</span>
+            <span class="brand-name">EcoScan</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About Us</a>
+            <a href="/upload" class="nav-button">Upload Image</a>
+        </div>
+    </nav>
+
+    <div class="chat-container">
+        <div class="recycling-animation">
+            <div class="recycling-icon">♻️</div>
+        </div>
+        
+        <div class="chat-header">
+            <h1>Recycling Assistant</h1>
+            <div class="uploaded-image-container">
+                <img src="{{ image_path }}" alt="Uploaded Image" class="uploaded-image">
+            </div>
+        </div>
+
+        <div id="chat-box" class="messages-container">
+            {% for chat in chat_history %}
+            <div class="chat-message {{ 'gemini' if chat.sender == 'Gemini' else 'user' }}">
+                <div class="message-content">
+                    <div class="message-header">
+                        <strong>{{ chat.sender }}</strong>
+                        <span class="message-time">Just now</span>
+                    </div>
+                    <p>{{ chat.message }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form id="chat-form" class="chat-input-form">
+            <div class="input-container">
+                <input type="text" 
+                       id="question" 
+                       name="question" 
+                       placeholder="Ask about recycling..." 
+                       required
+                       autocomplete="off">
+                <button type="submit">
+                    <span class="button-text">Send</span>
+                    <span class="button-icon">→</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="loading-overlay">
+        <div class="loading-content">
+            <div class="recycling-icon-large">♻️</div>
+            <p>Analyzing...</p>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Hide loading overlay immediately when chat page loads
+            $('.loading-overlay').hide();
+            
+            const chatBox = $("#chat-box");
+            
+            // Scroll to bottom on load
+            chatBox.scrollTop(chatBox[0].scrollHeight);
+
+            $("#chat-form").on("submit", function(e) {
+                e.preventDefault();
+                const question = $("#question").val().trim();
+                if (!question) return;
+
+                const form = $(this);
+                const button = form.find('button');
+                
+                // Disable form while processing
+                form.find('input, button').prop('disabled', true);
+                button.addClass('loading');
+
+                // Add user message immediately
+                appendMessage("User", question);
+
+                // Show thinking indicator
+                appendThinkingMessage();
+
+                $.post("/ask", { question: question }, function(data) {
+                    // Remove thinking message
+                    $('.thinking').remove();
+                    
+                    // Add Gemini's response
+                    appendMessage("Gemini", data.chat_history[data.chat_history.length - 1].message);
+                })
+                .always(function() {
+                    // Re-enable form
+                    form.find('input, button').prop('disabled', false);
+                    button.removeClass('loading');
+                    $("#question").val("").focus();
+                });
+            });
+
+            function appendMessage(sender, message) {
+                const messageHtml = `
+                    <div class="chat-message ${sender.toLowerCase()}">
+                        <div class="message-content">
+                            <div class="message-header">
+                                <strong>${sender}</strong>
+                                <span class="message-time">Just now</span>
+                            </div>
+                            <p>${message}</p>
+                        </div>
+                    </div>
+                `;
+                chatBox.append(messageHtml);
+                chatBox.scrollTop(chatBox[0].scrollHeight);
+            }
+
+            function appendThinkingMessage() {
+                const thinkingHtml = `
+                    <div class="chat-message gemini thinking">
+                        <div class="message-content">
+                            <div class="message-header">
+                                <strong>Gemini</strong>
+                                <span class="message-time">Thinking...</span>
+                            </div>
+                            <div class="thinking-indicator">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatBox.append(thinkingHtml);
+                chatBox.scrollTop(chatBox[0].scrollHeight);
+            }
+        });
+    </script>
+</body>
+</html>

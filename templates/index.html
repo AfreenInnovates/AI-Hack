@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload - EcoScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo">♻️</span>
+            <span class="brand-name">EcoScan</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About Us</a>
+            <a href="/upload" class="nav-button active">Upload Image</a>
+        </div>
+    </nav>
+
+    <div class="upload-container">
+        <div class="recycling-animation">
+            <div class="recycling-icon">♻️</div>
+        </div>
+
+        <div class="upload-content">
+            <h1>Recycling Assistant</h1>
+            <p class="upload-subtitle">Upload an image to get started with smart recycling guidance</p>
+
+            <div class="upload-box">
+                <form method="post" enctype="multipart/form-data" id="upload-form">
+                    <div class="upload-area" id="drop-zone">
+                        <div class="upload-icon">📸</div>
+                        <label for="image-upload" class="upload-label">
+                            Choose an image or drag it here
+                            <input id="image-upload" type="file" name="image" accept="image/*" required>
+                        </label>
+                        <p class="upload-hint">Supports: JPG, PNG, WEBP</p>
+                    </div>
+                    
+                    <div class="file-info" id="file-info" style="display: none;">
+                        <div class="file-preview">
+                            <img id="image-preview" src="" alt="Preview">
+                        </div>
+                        <div class="file-details">
+                            <p id="file-name"></p>
+                            <button type="button" id="change-file" class="secondary-button">Change Image</button>
+                        </div>
+                    </div>
+
+                    <div class="upload-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <p class="progress-text">Uploading...</p>
+                    </div>
+
+                    <button type="submit" class="submit-button">
+                        <span class="button-text">Analyze Image</span>
+                        <span class="button-icon">→</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="recycling-icon-large">♻️</div>
+            <p>Analyzing your image...</p>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('image-upload');
+        const fileInfo = document.getElementById('file-info');
+        const fileName = document.getElementById('file-name');
+        const imagePreview = document.getElementById('image-preview');
+        const changeFileBtn = document.getElementById('change-file');
+        const uploadForm = document.getElementById('upload-form');
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('drag-over');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('drag-over');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            handleFiles(files);
+        }
+
+        // File input change handler
+        fileInput.addEventListener('change', function(e) {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                fileName.textContent = file.name;
+                
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+
+                dropZone.style.display = 'none';
+                fileInfo.style.display = 'flex';
+            }
+        }
+
+        // Change file button handler
+        changeFileBtn.addEventListener('click', function() {
+            dropZone.style.display = 'flex';
+            fileInfo.style.display = 'none';
+            fileInput.value = '';
+            imagePreview.src = '';
+        });
+
+        // Form submit handler
+        uploadForm.addEventListener('submit', function(e) {
+            document.querySelector('.loading-overlay').style.display = 'flex';
+            document.querySelector('.upload-progress').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

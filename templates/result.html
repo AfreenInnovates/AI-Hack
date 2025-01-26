@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycling Analysis Result - EcoScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="result-page">
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo">♻️</span>
+            <span class="brand-name">EcoScan</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About Us</a>
+            <a href="/upload">Upload Image</a>
+            {% if current_user.is_authenticated %}
+            <a href="/dashboard" class="nav-button">My Trees ({{ current_user.total_rewards }})</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="result-container">
+        <div class="result-content">
+            <div class="result-header">
+                <h1>Analysis Results</h1>
+                <p class="result-subtitle">Here's what we found about your item</p>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-image-container">
+                    <img src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}" 
+                         alt="Uploaded Image" 
+                         class="result-image"/>
+                </div>
+
+                <div class="analysis-section">
+                    <div class="chat-message gemini">
+                        <div class="message-header">
+                            <span class="ai-icon">🤖</span>
+                            <h3>Image Analysis</h3>
+                        </div>
+                        <p>{{ description }}</p>
+                    </div>
+
+                    <form action="/ask_recycling" method="POST" class="chat-form">
+                        <div class="input-container">
+                            <input type="text" 
+                                   name="question" 
+                                   placeholder="Ask about recycling this item..." 
+                                   required>
+                            <button type="submit">
+                                <span>Ask</span>
+                                <span class="button-icon">↗️</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-history" id="chatHistory">
+        <!-- Chat messages will be dynamically added here -->
+    </div>
+</body>
+</html>
