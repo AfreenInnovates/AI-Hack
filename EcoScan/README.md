@@ -5,6 +5,8 @@ EcoScan is a web platform that empowers users to make eco-friendly choices by gu
 ## Inspiration
 EcoScan was inspired by the need for sustainable solutions in our everyday lives. We wanted to provide a platform where users could learn about recycling, plant trees, and make a positive environmental impact. Our goal is to encourage responsible actions for the environment and empower people to contribute to tree growth while earning rewards.
 
+#### Notebook can be found in [`EcoScan/recycle.ipynb`](https://github.com/AfreenInnovates/AI-Hack/blob/main/EcoScan/recycle.ipynb)
+
 ## What it does
 - **Sign Up/Login**: Users can create personalized accounts to track their progress and rewards.
 - **Recycling Tips**: Upload images of items for AI-powered recycling tips based on how to recycle or dispose of them.
