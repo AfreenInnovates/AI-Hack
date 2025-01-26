@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Trees - EcoScan</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      /* Global Styles */
+      body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7fc;
+        display: flex;
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+        height: 100vh; /* Ensure the body takes full height of the viewport */
+      }
+
+      /* Center the dashboard container */
+      .dashboard-container {
+        padding: 40px;
+        width: 100%;
+        max-width: 1200px; /* Limit width of the content */
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: auto;
+      }
+
+      /* Navbar */
+      .navbar {
+        background-color: #2a3d66;
+        display: flex;
+        justify-content: space-between;
+        padding: 16px 32px;
+        color: white;
+        position: absolute; /* To keep navbar at top */
+        width: 100%;
+        top: 0;
+      }
+
+      .navbar .nav-brand .brand-name {
+        font-weight: 600;
+        font-size: 24px;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        margin-left: 20px;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .nav-links a:hover {
+        color: #3c97d3;
+      }
+
+      .nav-links .active {
+        color: #3c97d3;
+      }
+
+      /* Dashboard Header */
+      .dashboard-header h1 {
+        font-size: 32px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .stats-cards {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .stat-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        width: 220px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .stat-card .stat-icon {
+        font-size: 30px;
+        margin-bottom: 10px;
+      }
+
+      .stat-info h3 {
+        font-size: 16px;
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      /* Tree Cards Grid */
+      .trees-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 40px;
+        justify-items: center; /* Center images below the stats */
+      }
+
+      .tree-card {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+        margin: 0 auto; /* Center cards */
+      }
+
+      .tree-card:hover {
+        transform: scale(1.05);
+      }
+
+      .tree-image img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+
+      .tree-info {
+        padding: 15px;
+      }
+
+      .tree-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .tree-date {
+        font-size: 14px;
+        color: #777;
+        margin-right: 10px; /* Add margin for spacing between date and rewards */
+      }
+
+      .tree-badge {
+        background-color: #28a745;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-weight: 600;
+      }
+
+      .tree-actions {
+        margin-top: 10px;
+      }
+
+      .delete-tree-btn {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .delete-tree-btn:hover {
+        background-color: #f5c6cb;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        margin-top: 100px;
+      }
+
+      .empty-state .empty-icon {
+        font-size: 50px;
+        color: #8e9ba8;
+      }
+
+      .empty-state h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 20px 0;
+      }
+
+      .primary-button {
+        background-color: #28a745;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.3s;
+      }
+
+      .primary-button:hover {
+        background-color: #218838;
+      }
+
+      /* Confirmation Modal */
+      .confirm-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .confirm-modal-content {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        text-align: center;
+        width: 400px;
+      }
+
+      .confirm-modal-title {
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+
+      .confirm-modal-buttons {
+        display: flex;
+        justify-content: space-around;
+      }
+
+      .confirm-btn {
+        padding: 10px 20px;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .confirm-btn.cancel {
+        background-color: #f0f0f0;
+        color: #333;
+      }
+
+      .confirm-btn.delete {
+        background-color: #e57373;
+        color: white;
+      }
+
+      .confirm-btn:hover {
+        opacity: 0.9;
+      }
+
+      /* Notification Styles */
+      .notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 30px;
+        border-radius: 6px;
+        color: white;
+        font-weight: 600;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .notification.show {
+        opacity: 1;
+      }
+
+      .notification.success {
+        background-color: #4caf50;
+      }
+
+      .notification.error {
+        background-color: #f44336;
+      }
+    </style>
+  </head>
+  <body class="dashboard-page">
+    <nav class="navbar">
+      <div class="nav-brand">
+        <span class="logo">♻️</span>
+        <span class="brand-name">EcoScan</span>
+      </div>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/about">About Us</a>
+        <a href="/upload">Upload Image</a>
+        <a href="/plant-tree">Plant a Tree</a>
+        <a href="/dashboard" class="nav-button active"
+          >My Trees ({{ current_user.total_rewards }})</a
+        >
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1>My Tree Collection</h1>
+        <div class="stats-cards">
+          <div class="stat-card">
+            <span class="stat-icon">🌳</span>
+            <div class="stat-info">
+              <h3>Total Rewards</h3>
+              <p class="stat-value" id="total-rewards">
+                {{ current_user.total_rewards }}
+              </p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🌱</span>
+            <div class="stat-info">
+              <h3>Trees Planted</h3>
+              <p class="stat-value" id="trees-planted">{{ trees|length }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trees-grid" id="trees-grid">
+        {% for tree in trees %}
+        <div class="tree-card" id="tree-{{ tree.id }}">
+          <div class="tree-image">
+            <img src="{{ tree.image_path }}" alt="Planted tree" />
+          </div>
+          <div class="tree-info">
+            <div class="tree-header">
+              <p class="tree-date">
+                {{ tree.planted_at.strftime('%B %d, %Y') }}
+              </p>
+              <span class="tree-badge">+{{ tree.rewards_earned }} rewards</span>
+            </div>
+            <div class="tree-actions">
+              <button
+                class="delete-tree-btn"
+                onclick="showDeleteConfirmation({{ tree.id }}, {{ tree.rewards_earned }})"
+              >
+                <span class="delete-icon">🗑️</span>
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if not trees %}
+      <div class="empty-state">
+        <span class="empty-icon">🌱</span>
+        <h2>No Trees Yet</h2>
+        <p>Start your eco-journey by planting your first tree!</p>
+        <a href="/plant-tree" class="primary-button">Plant a Tree</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="confirm-modal" id="confirmModal">
+      <div class="confirm-modal-content">
+        <h3 class="confirm-modal-title">Remove Tree?</h3>
+        <p class="confirm-modal-message">
+          Are you sure you want to remove this tree from your collection? This
+          action cannot be undone.
+        </p>
+        <div class="confirm-modal-buttons">
+          <button class="confirm-btn cancel" onclick="hideDeleteConfirmation()">
+            Cancel
+          </button>
+          <button class="confirm-btn delete" id="confirmDelete">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // JavaScript for deleting a tree and other interactions
+      let treeIdToDelete = null;
+
+      function showDeleteConfirmation(id, rewards) {
+        treeIdToDelete = id;
+        document.getElementById("confirmModal").style.display = "flex";
+      }
+
+      function hideDeleteConfirmation() {
+        document.getElementById("confirmModal").style.display = "none";
+      }
+
+      document
+        .getElementById("confirmDelete")
+        .addEventListener("click", function () {
+          if (treeIdToDelete) {
+            deleteTree(treeIdToDelete);
+          }
+        });
+
+      function deleteTree(treeId) {
+        $.ajax({
+            url: `/delete-tree/${treeId}`,
+            method: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    // Remove the tree card with animation
+                    const treeCard = document.getElementById(`tree-${treeId}`);
+                    treeCard.style.opacity = '0';
+                    treeCard.style.transform = 'scale(0.8)';
+                    
+                    setTimeout(() => {
+                        treeCard.remove();
+                        
+                        // Update total rewards
+                        document.getElementById('total-rewards').textContent = response.new_total;
+                        
+                        // Update trees planted count
+                        document.getElementById('trees-planted').textContent = response.remaining_trees;
+                        
+                        // Show success message
+                        showNotification('Tree removed successfully', 'success');
+                        
+                        // If no trees left, show empty state
+                        if (response.remaining_trees === 0) {
+                            const treesGrid = document.querySelector('.trees-grid');
+                            treesGrid.innerHTML = `
+                                <div class="empty-state">
+                                    <span class="empty-icon">🌱</span>
+                                    <h2>No Trees Yet</h2>
+                                    <p>Start your eco-journey by planting your first tree!</p>
+                                    <a href="/plant-tree" class="primary-button">Plant a Tree</a>
+                                </div>
+                            `;
+                        }
+                    }, 300);
+                } else {
+                    showNotification('Failed to remove tree', 'error');
+                }
+                hideDeleteConfirmation();
+            },
+            error: function() {
+                showNotification('An error occurred', 'error');
+                hideDeleteConfirmation();
+            }
+        });
+      }
+
+      function updateTreeStats() {
+        const treeCards = document.querySelectorAll(".tree-card");
+        const totalRewards = document.getElementById("total-rewards");
+        const treesPlanted = document.getElementById("trees-planted");
+
+        // Update stats
+        treesPlanted.textContent = treeCards.length;
+        totalRewards.textContent = Array.from(treeCards).reduce((sum, card) => {
+          return (
+            sum +
+            parseInt(
+              card.querySelector(".tree-badge").textContent.replace("+", "")
+            )
+          );
+        }, 0);
+      }
+    </script>
+  </body>
+</html>
